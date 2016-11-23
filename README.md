@@ -1,6 +1,6 @@
 # blog
 
-Project contains: React + avansert Redux + + axios + React Router + Redux Forms
+React + advancewd Redux + axios + React Router + Redux Forms
 
 
 ###Getting Started###
