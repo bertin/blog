@@ -1,7 +1,8 @@
-import React, { Component, PropTypes } from 'react';  // PropTypes gives us access to the component's application context.
-import { reduxForm } from 'redux-form';               // Import the eduxForm helper method, nearly identical to the connect helper function from the react-redux library.
-import { createPost } from '../actions/index';        // Import the createPosts action creator.
-import { Link } from 'react-router';                  // Import the Link component from React Router.
+import React, { Component, PropTypes } from 'react';     // PropTypes gives us access to the component's application context.
+import { reduxForm, Field } from 'redux-form';           // Import the eduxForm helper method, nearly identical to the connect helper function from the react-redux library.
+import { createPost } from '../actions/index';           // Import the createPosts action creator.
+import { Link } from 'react-router';                     // Import the Link component from React Router.
+import { connect } from 'react-redux';                   // Import the connect helper from react-redux.
 
 class PostsNew extends Component {
    // Get access to the context, to get access to the React Router, so that we can call the React Router push helper method.
@@ -16,9 +17,9 @@ class PostsNew extends Component {
       router: PropTypes.object
    };
 
-   onSubmit(props) { // The pops parameter is properties from the forn, the title, categories, and content. It is NOT the same as "this.props".
+   onSubmit(values) { // The values parameter is properties from the form, the title, categories, and content.
       // The createPost action creator is returning a promise. We can chain on to that promise with the ".then" callback function.
-      this.props.createPost(props)
+      this.props.createPost(values)
       .then(() => {
          // Blog post has been created, navigate the user to the index.
          // We navigate by calling this.context.router.push helper method, with the new path to navigate to.
@@ -27,41 +28,13 @@ class PostsNew extends Component {
    }
 
    render() {
-      const { fields: { title, categories, content }, handleSubmit } = this.props;
-      // the above line is the same as writing:
-      //   const title = this.props.fields.title;
-      //   const categories = this.props.fields.categories;
-      //   const content = this.props.fields.content;
-      //   const handleSubmit = this.props.handleSubmit;
-      //console.log(title);
+      const { handleSubmit } = this.props;
       return(
          <form onSubmit={ handleSubmit(this.onSubmit.bind(this)) }>
             <h3>Lag et nytt Bloginnlegg</h3>
-
-            <div className={`form-group ${title.touched && title.invalid ? 'has-danger' : ''}`}>
-               <label>Tittel</label>
-               <input type="text" className="form-control" {...title} />
-               <div className="text-help">
-                  { title.touched ? title.error : "" }
-               </div>
-            </div>
-
-            <div className={`form-group ${categories.touched && categories.invalid ? 'has-danger' : ''}`}>
-               <label>Kategorier</label>
-               <input type="text" className="form-control" {...categories} />
-               <div className="text-help">
-                  { categories.touched ? categories.error : "" }
-               </div>
-            </div>
-
-            <div className={`form-group ${content.touched && content.invalid ? 'has-danger' : ''}`}>
-               <label>Innhold</label>
-               <textarea className="form-control" {...content} />
-               <div className="text-help">
-                  { content.touched ? content.error : "" }
-               </div>
-            </div>
-
+            <Field name="title" type="text" component={renderField} label="Title"/>
+            <Field name="categories" type="text" component={renderField} label="Categories"/>
+            <Field name="content" type="text" component={renderField} label="Content"/>
             <button type="submit" className="btn btn-primary">Lagre</button>
             <Link to="/" className="btn btn-danger">Avbryt</Link>
          </form>
@@ -88,16 +61,30 @@ function validate(values) {
    return errors;
 }
 
-// Difference between connect and reduxForm helper methods.
-// connect: 1st argument is mapStateToProps, 2nd is mapDispatchToProps.
-// reduxForm: 1st argument is config, 2nd is mapStateToProps, 3rd is mapDispatchToProps.
+// Helper function to render one single field.
+const renderField = ({ input, label, type, meta: { touched, error, warning } }) => (
+  <div className={`form-group ${touched && error ? 'has-danger' : ''}`}>
+    <label>{label}</label>
+    <div>
+      <input {...input} placeholder={label} type={type} className="form-control"/>
+      <div className="text-help">
+         { touched ? error : "" }
+      </div>
+    </div>
+  </div>
+)
 
-// This is where we pass in our configuration to reduxForm, as a javacript object, the "letter" that is sent to reduxForm.
-export default reduxForm({
+// Decorate the PostsNew Component with reduxForm.
+PostsNew = reduxForm({
    form: 'PostsNewForm',
-   fields: ['title', 'categories', 'content'],
    validate
-}, null, { createPost })(PostsNew);
+})(PostsNew);
+
+// Decorate the PostsNew Component with redux connect, to make it possible to call the createPost action creator.
+PostsNew = connect(null, {createPost})(PostsNew);
+
+export default PostsNew;
+
 //
 // The reduxForm is a helper method to make the connection between our form and the Redux Form.
 // Just as with the connect helper, the reduxForm helper injects properties on the "this.props" property.
@@ -120,33 +107,6 @@ export default reduxForm({
 //
 // REDUX FORM
 // Redux form is probably one of the best libraries around redux. It is really a pleasure to use.
-// Documentation on: https://github.com/erikras/redux-form
-// Redux Form homepage: http://erikras.github.io/redux-form/#/?_k=ap86kh
-// Getting started guide: http://erikras.github.io/redux-form/#/getting-started?_k=nn2iqo
-//
-// 0. First we hook up the Redux Form reducer to our reducers, inside the reducers/index.js
-//
-// Redux form, behind the scene "letter conversation".
-// 1. Dear Redux Form, you are in charge of a form called "PostsNew", you need to keep tract of three field inputs, they are; title, categories, content.
-// 2. Redux Form reads the letter and replies.
-// Dear Developer,
-//   I can handle this. Tell each field I'm in charge now. I will manage them completely.
-//   I have a separate set of rules for each field so they know what to do when they are updated.
-//   Also, be sure to tell the form that I'm in charge of submitting now.
-//   Here are som props to make that happen, make sure the form knows about them. These are accessible thru "this.props",
-//   like this.props.handleSubmit, this.props.fields.title, this.props.fields.categories and this.props.fields.content.
-//   {
-//     handleSubmit: function,
-//     fields: {
-//                title: {...},
-//                categories: {...},
-//                content: {...},
-//             }
-//   }
-// 3. The developer then connects the form elements to the "field configuration object" returned from the Redux Form by using
-// the es6 spread syntax {...title}, that destructures/flattens the object into its separate keys and values, and passes it into
-// the form input as separate properties.
-// So in effect all the properties in these configuration objects becomes properties on the form input element.
 //
 // The handleSubmit callback function can optionally receive an action creator (from us) as a parameter,
 //   so that Redux Form can call the action creator (with the values from the form) when the user submits the form, and the form is valid.
