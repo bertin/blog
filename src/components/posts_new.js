@@ -30,49 +30,49 @@ class PostsNew extends Component {
    render() {
       const { handleSubmit } = this.props;
       return(
-         <form onSubmit={ handleSubmit(this.onSubmit.bind(this)) }>
-            <h3>Lag et nytt Bloginnlegg</h3>
+         <form onSubmit={ handleSubmit(this.onSubmit.bind(this))} className="form-horizontal">
+            <h3>Create a new blog post</h3>
             <Field name="title" type="text" component={renderField} label="Title"/>
             <Field name="categories" type="text" component={renderField} label="Categories"/>
             <Field name="content" type="text" component={renderField} label="Content"/>
-            <button type="submit" className="btn btn-primary">Lagre</button>
-            <Link to="/" className="btn btn-danger">Avbryt</Link>
+            <button type="submit" className="btn btn-primary">Save</button>
+            <Link to="/" className="btn btn-danger">Cancel</Link>
          </form>
       );
    }
 }
 
-// validate is called with the values from the fields of the form, as specified in the configuration object to the reduxForm helper method.
-function validate(values) {
-   const errors = {};
-
-   if ( !values.title ) {
-      errors.title = 'Du må oppgi en tittel på ditt nye bloginnlegg';
-   }
-
-   if ( !values.categories ) {
-      errors.categories = "Du må oppgi minst én kategori for ditt nye bloginnlegg";
-   }
-
-   if ( !values.content ) {
-      errors.content = "Du må skrive et innhold for ditt mye bloginnlegg"
-   }
-
-   return errors;
-}
-
 // Helper function to render one single field.
 const renderField = ({ input, label, type, meta: { touched, error, warning } }) => (
-  <div className={`form-group ${touched && error ? 'has-danger' : ''}`}>
-    <label>{label}</label>
-    <div>
-      <input {...input} placeholder={label} type={type} className="form-control"/>
-      <div className="text-help">
+  <div className="form-group">
+    <label className="control-label col-sm-2" htmlFor={name}>{label}</label>
+    <div className="col-sm-10">
+      <input {...input} placeholder={label} id={name} type={type} className={`form-control ${touched && error ? 'panel-danger' : ''}`}/>
+      <div className="text-danger">
          { touched ? error : "" }
       </div>
     </div>
   </div>
 )
+
+// validate is called with the values from the fields of the form.
+function validate(values) {
+   const errors = {};
+
+   if ( !values.title ) {
+      errors.title = 'Please supply a title for your blog post';
+   }
+
+   if ( !values.categories ) {
+      errors.categories = "Please supply at least one category for the blog post";
+   }
+
+   if ( !values.content ) {
+      errors.content = "Please supply a content for the blog post"
+   }
+
+   return errors;
+}
 
 // Decorate the PostsNew Component with reduxForm.
 PostsNew = reduxForm({
@@ -83,6 +83,7 @@ PostsNew = reduxForm({
 // Decorate the PostsNew Component with redux connect, to make it possible to call the createPost action creator.
 PostsNew = connect(null, {createPost})(PostsNew);
 
+// Export the docorated and connected version of PostsNew.
 export default PostsNew;
 
 //

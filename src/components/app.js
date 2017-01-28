@@ -5,7 +5,11 @@ export default class App extends Component {
   render() {
     return (
       <div>
-         {this.props.children}
+         <header>Header stuff goes here</header>
+         <div>
+            {this.props.children}
+         </div>
+         <footer>Footer stuff goes here</footer>
       </div>
     );
   }

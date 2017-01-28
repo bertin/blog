@@ -25,19 +25,19 @@ class PostsShow extends Component {
       const { post } = this.props;
 
       if (!post) {
-         return <div>Henter bloginnhold...</div>
+         return <div>Fetching blog post content...</div>
       }
 
       return (
          <div>
-            <Link to="/">Tilbake til bloggliste</Link>
+            <Link to="/">Back to the blog post index</Link>
             <button
                onClick={ this.onDeleteClick.bind(this) }
-               className="btn btn-danger pull-xs-right">
-               Slett bloginnhold
+               className="btn btn-danger pull-right">
+               Delete blog post
             </button>
             <h3>{post.title}</h3>
-            <h6>Kategorier: {post.categories}</h6>
+            <h4>Categories: {post.categories}</h4>
             <p>{post.content}</p>
          </div>
       );
