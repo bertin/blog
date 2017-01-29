@@ -21,7 +21,7 @@ ReactDOM.render(
 );
 
 // We wire up React Router to our application by;
-//    1. replacing the <App /> component by an instance of the React Router.
+//    1. replacing the <App /> component by an instance of the Provider encapsulating the React Router.
 //    2. Tell React Router what routes are walid in our application, and which components to show for each of them.
 //       => This is specified in the src/routes.js file
 //       => the routes.js file is applied as a parameter "routes" to the <Router ... / > component.
