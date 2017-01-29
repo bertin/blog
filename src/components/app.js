@@ -5,13 +5,17 @@ export default class App extends Component {
   render() {
     return (
       <div>
-         <header>Header stuff goes here</header>
+         <header>
+            <div className="col-sm-12 bg-success">Header stuff goes here</div>
+         </header>
          <div>
             {this.props.children}
          </div>
-         <footer>Footer stuff goes here</footer>
+         <footer>
+            <div className="col-sm-12 bg-success">Footer stuff goes here</div>
+         </footer>
       </div>
-    );
+   );
   }
 }
 
